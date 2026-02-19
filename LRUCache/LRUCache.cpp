@@ -63,6 +63,18 @@ public:
 		m_cacheMap.clear();
 		m_cacheList.clear();
 	}
+
+	bool remove(const Key& key) {
+		std::lock_guard<std::mutex> lock(m_mutex);
+		auto it = m_cacheMap.find(key);
+
+		if (it == m_cacheMap.end()) {
+			return false;
+		}
+		m_cacheList.erase(it->second);
+		m_cacheMap.erase(it);
+		return true;
+	}
 private:
 	int m_capacity;
 	mutable std::mutex m_mutex;
