@@ -427,6 +427,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-.sln
-.vcxproj
-.vcxproj.filters
+*/.sln/
+*/.vcxproj/
+*/.vcxproj.filters/
