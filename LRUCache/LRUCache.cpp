@@ -21,12 +21,55 @@ public:
 			m_capacity = capacity;
 		}
 	}
+
+	bool get(const Key& key, Value& outValue) {
+		std::lock_guard<std::mutex> lock(m_mutex);
+		auto it = m_cacheMap.find(key);
+		if (it == m_cacheMap.end()) {
+			return false;
+		}
+		m_cacheList.splice(m_cacheList.begin(), m_cacheList, it->second);
+		outValue = it->second->second;
+		return true;
+	}
+
+	void put(const Key& key, const Value& value) {
+		std::lock_guard<std::mutex> lock(m_mutex);
+		auto it = m_cacheMap.find(key);
+
+		if (it != m_cacheMap.end()) {
+			m_cacheList.splice(m_cacheList.begin(), m_cacheList, it->second);
+			it->second->second = value;
+			return;
+		}
+
+		if (m_cacheMap.size() >= m_capacity) {
+			auto last = m_cacheList.back();
+			m_cacheMap.erase(ladst.first);
+			m_cacheList.pop_back();
+		}
+
+		m_cacheList.emplace_front(key, value);
+		m_cacheMap[key] = m_cacheList.begin();
+	}
+
+	int size() const {
+		std::lock_guard<std::mutex> lock(m_mutex);
+		return m_cacheMap.size();
+	}
+
+	void clear() {
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_cacheMap.clear();
+		m_cacheList.clear();
+	}
 private:
 	int m_capacity;
 	mutable std::mutex m_mutex;
 	std::list<std::pair<Key, Value>> m_cacheList;
 	std::unordered_map<
-		Key, typename std::list<std::pair<Key, Value>>::iterator,
+		Key, 
+		typename std::list<std::pair<Key, Value>>::iterator,
 		Hash,
 		KeyEqual
 	> m_cacheMap;
