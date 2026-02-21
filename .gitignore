@@ -430,3 +430,5 @@ FodyWeavers.xsd
 */*.sln
 */*.vcxproj
 */*.vcxproj.filters
+
+*/build
