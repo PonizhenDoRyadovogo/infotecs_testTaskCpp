@@ -2,7 +2,6 @@
 #include <list>
 #include <mutex>
 #include <string>
-#include <algorithm>
 
 template<
 	typename Key, 

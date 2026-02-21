@@ -5,22 +5,17 @@
 #include <cassert>
 #include "LRUCache.h"
 
-// Тест 1: Проверка базовой логики LRU (вытеснение самого старого)
 void test_lru_logic() {
     std::cout << "Running LRU Logic Test..." << std::endl;
 
-    // Кэш на 2 элемента
     LRUCache<int, std::string> cache(2);
 
     cache.put(1, "A");
     cache.put(2, "B");
 
-    // Сейчас порядок: [2:B, 1:A]
-    // Обращаемся к 1, теперь 1 — "свежий", 2 — "старый"
     std::string val;
     cache.get(1, val);
 
-    // Добавляем 3, должен вытесниться ключ 2
     cache.put(3, "C");
 
     assert(cache.get(1, val) == true);  // 1 на месте
@@ -30,7 +25,6 @@ void test_lru_logic() {
     std::cout << "LRU Logic Test: PASSED" << std::endl;
 }
 
-// Тест 2: Проверка потокобезопасности (одновременная запись и чтение)
 void test_multithreading() {
     std::cout << "Running Multithreading Test..." << std::endl;
 
@@ -55,21 +49,19 @@ void test_multithreading() {
         t.join();
     }
 
-    // Если мы здесь и программа не "упала" — мьютекс отработал верно
     std::cout << "Multithreading Test: PASSED" << std::endl;
 }
 
-// Тест 3: Проверка ограничений размера из ТЗ
+
 void test_capacity_limits() {
     std::cout << "Running Capacity Limits Test..." << std::endl;
 
-    LRUCache<int, int> cache(15000); // По ТЗ ограничение 10000
-    // Мы не можем проверить приватное поле напрямую, но можем проверить поведение
+    LRUCache<int, int> cache(15000); 
+
     for (int i = 0; i < 11000; ++i) {
         cache.put(i, i);
     }
 
-    // Если лимит в 10000 сработал, то 0-й элемент уже должен быть вытеснен
     assert(cache.size() <= 10000);
     std::cout << "Capacity Limits Test: PASSED" << std::endl;
 }
