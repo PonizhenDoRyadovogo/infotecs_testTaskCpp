@@ -2,6 +2,7 @@
 #include <list>
 #include <mutex>
 #include <string>
+#include <algorithm>
 
 template<
 	typename Key, 
@@ -14,12 +15,15 @@ public:
 	LRUCache(int capacity) {
 		if (capacity > 10000) {
 			m_capacity = 10000;
-		} esle if (capacity <= 0) {
+			return;
+		}
+
+		if (capacity <= 0) {
 			m_capacity = 1;
+			return;
 		}
-		else {
-			m_capacity = capacity;
-		}
+
+		m_capacity = capacity;
 	}
 
 	bool get(const Key& key, Value& outValue) {
@@ -45,7 +49,7 @@ public:
 
 		if (m_cacheMap.size() >= m_capacity) {
 			auto last = m_cacheList.back();
-			m_cacheMap.erase(ladst.first);
+			m_cacheMap.erase(last.first);
 			m_cacheList.pop_back();
 		}
 
@@ -71,10 +75,12 @@ public:
 		if (it == m_cacheMap.end()) {
 			return false;
 		}
+		
 		m_cacheList.erase(it->second);
 		m_cacheMap.erase(it);
 		return true;
 	}
+
 private:
 	int m_capacity;
 	mutable std::mutex m_mutex;
